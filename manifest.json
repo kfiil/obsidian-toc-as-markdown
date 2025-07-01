@@ -1,0 +1,11 @@
+{
+  "id": "obsidian-toc-as-markdown",
+  "name": "TOC as Markdown",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Generate table of contents as markdown from document headers with right-click context menu",
+  "author": "Claude Code Assistant",
+  "authorUrl": "https://github.com/kfiil/obsidian-toc-as-markdown",
+  "fundingUrl": "https://github.com/kfiil/obsidian-toc-as-markdown",
+  "isDesktopOnly": false
+}

@@ -1,0 +1,1 @@
+export { TocAsMarkdownPlugin as default } from './src/main';
