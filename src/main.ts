@@ -19,8 +19,57 @@ export class TocAsMarkdownPlugin extends Plugin {
     await this.loadSettings();
     this.tocGenerator = new TocGenerator();
 
-    // Context menu events will be registered through Obsidian's file explorer
-    // This functionality will be available when the plugin is loaded in Obsidian
+    // Add commands that can be triggered from command palette
+    this.addCommand({
+      id: 'add-toc-to-current-file',
+      name: 'Add Table of Contents to current file',
+      callback: () => {
+        const activeFile = this.app.workspace.getActiveFile();
+        if (activeFile && activeFile.extension === 'md') {
+          this.addTocToFile(activeFile);
+        }
+      }
+    });
+
+    this.addCommand({
+      id: 'add-toc-to-folder',
+      name: 'Add TOC to all files in current folder',
+      callback: () => {
+        const activeFile = this.app.workspace.getActiveFile();
+        if (activeFile && activeFile.parent) {
+          this.addTocToAllFilesInFolder(activeFile.parent);
+        }
+      }
+    });
+
+    // Register event listeners for context menus using proper Obsidian API
+    // Note: These events might only be available when the plugin runs in actual Obsidian
+    
+    // Hook into file context menu
+    this.registerEvent(
+      (this.app.workspace as any).on('file-menu', (menu: Menu, file: TFile) => {
+        if (file instanceof TFile && file.extension === 'md') {
+          this.onFileMenuEvent(menu, file);
+        }
+      })
+    );
+
+    // Hook into folder context menu  
+    this.registerEvent(
+      (this.app.workspace as any).on('folder-menu', (menu: Menu, folder: TFolder) => {
+        if (folder instanceof TFolder) {
+          this.onFolderMenuEvent(menu, folder);
+        }
+      })
+    );
+
+    // Also add ribbon icon for easy access
+    this.addRibbonIcon('list-ordered', 'Add TOC to current file', () => {
+      const activeFile = this.app.workspace.getActiveFile();
+      if (activeFile && activeFile.extension === 'md') {
+        this.addTocToFile(activeFile);
+      }
+    });
   }
 
   onFileMenuEvent(menu: Menu, file: TFile): void {
@@ -147,4 +196,5 @@ export class TocAsMarkdownPlugin extends Plugin {
   async saveSettings(): Promise<void> {
     await this.saveData(this.settings);
   }
+
 }

@@ -12,6 +12,8 @@ export class Plugin {
   loadData() { return Promise.resolve({}); }
   saveData() { return Promise.resolve(); }
   registerEvent() {}
+  addCommand() {}
+  addRibbonIcon() {}
 }
 
 export class TFile {
