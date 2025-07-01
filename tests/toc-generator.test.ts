@@ -59,7 +59,7 @@ Content for section two.`;
   });
 
   describe('generateTocMarkdown', () => {
-    it('should generate bullet list TOC format', () => {
+    it('should generate bullet list TOC format with Obsidian internal links', () => {
       const headers: HeaderEntry[] = [
         { level: 1, text: 'Main Title', anchor: 'main-title', lineNumber: 1 },
         { level: 2, text: 'Section One', anchor: 'section-one', lineNumber: 4 },
@@ -70,12 +70,13 @@ Content for section two.`;
         formatType: 'bullets',
         indentSize: 2,
         includeLinks: true,
+        linkFormat: 'obsidian',
         levelRange: { min: 1, max: 6 }
       };
 
-      const expectedToc = `- [Main Title](#main-title)
-  - [Section One](#section-one)
-    - [Subsection A](#subsection-a)`;
+      const expectedToc = `- [[#Main Title]]
+  - [[#Section One]]
+    - [[#Subsection A]]`;
 
       const result = tocGenerator.generateTocMarkdown(headers, formatOptions);
 
@@ -83,6 +84,33 @@ Content for section two.`;
       if (result.success) {
         expect(result.tocMarkdown).toBe(expectedToc);
         expect(result.headersFound).toBe(3);
+      }
+    });
+
+    it('should preserve exact header text in Obsidian links', () => {
+      const headers: HeaderEntry[] = [
+        { level: 1, text: 'What do we mean when we say TRANSPARENCY', anchor: 'what-do-we-mean-when-we-say-transparency', lineNumber: 1 },
+        { level: 2, text: 'API/REST Endpoints', anchor: 'apirest-endpoints', lineNumber: 4 },
+        { level: 3, text: 'File.txt Processing', anchor: 'filetxt-processing', lineNumber: 7 }
+      ];
+
+      const formatOptions: FormatOptions = {
+        formatType: 'bullets',
+        indentSize: 2,
+        includeLinks: true,
+        linkFormat: 'obsidian',
+        levelRange: { min: 1, max: 6 }
+      };
+
+      const expectedToc = `- [[#What do we mean when we say TRANSPARENCY]]
+  - [[#API/REST Endpoints]]
+    - [[#File.txt Processing]]`;
+
+      const result = tocGenerator.generateTocMarkdown(headers, formatOptions);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.tocMarkdown).toBe(expectedToc);
       }
     });
 
@@ -96,11 +124,12 @@ Content for section two.`;
         formatType: 'numbers',
         indentSize: 2,
         includeLinks: true,
+        linkFormat: 'obsidian',
         levelRange: { min: 1, max: 6 }
       };
 
-      const expectedToc = `1. [Introduction](#introduction)
-  1. [Getting Started](#getting-started)`;
+      const expectedToc = `1. [[#Introduction]]
+  1. [[#Getting Started]]`;
 
       const result = tocGenerator.generateTocMarkdown(headers, formatOptions);
 
@@ -122,6 +151,7 @@ Content for section two.`;
         formatType: 'bullets',
         indentSize: 2,
         includeLinks: true,
+        linkFormat: 'obsidian',
         levelRange: { min: 2, max: 3 }
       };
 
@@ -137,11 +167,37 @@ Content for section two.`;
       }
     });
 
+    it('should generate markdown links when linkFormat is markdown', () => {
+      const headers: HeaderEntry[] = [
+        { level: 1, text: 'What do we mean when we say TRANSPARENCY', anchor: 'what-do-we-mean-when-we-say-transparency', lineNumber: 1 },
+        { level: 2, text: 'API/REST Endpoints', anchor: 'apirest-endpoints', lineNumber: 4 }
+      ];
+
+      const formatOptions: FormatOptions = {
+        formatType: 'bullets',
+        indentSize: 2,
+        includeLinks: true,
+        linkFormat: 'markdown',
+        levelRange: { min: 1, max: 6 }
+      };
+
+      const expectedToc = `- [What do we mean when we say TRANSPARENCY](#what-do-we-mean-when-we-say-transparency)
+  - [API/REST Endpoints](#apirest-endpoints)`;
+
+      const result = tocGenerator.generateTocMarkdown(headers, formatOptions);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.tocMarkdown).toBe(expectedToc);
+      }
+    });
+
     it('should return error for empty headers array', () => {
       const formatOptions: FormatOptions = {
         formatType: 'bullets',
         indentSize: 2,
         includeLinks: true,
+        linkFormat: 'obsidian',
         levelRange: { min: 1, max: 6 }
       };
 
@@ -162,6 +218,36 @@ Content for section two.`;
         { input: 'Special!@#$%^&*()Characters', expected: 'specialcharacters' },
         { input: 'Spaces   and    tabs', expected: 'spaces-and-tabs' },
         { input: 'UPPERCASE and lowercase', expected: 'uppercase-and-lowercase' }
+      ];
+
+      testCases.forEach(({ input, expected }) => {
+        const result = tocGenerator.createAnchorLink(input);
+        expect(result).toBe(expected);
+      });
+    });
+
+    it('should handle uppercase headers correctly', () => {
+      const testCases = [
+        { input: 'What do we mean when we say TRANSPARENCY', expected: 'what-do-we-mean-when-we-say-transparency' },
+        { input: 'ALL CAPS HEADER', expected: 'all-caps-header' },
+        { input: 'Mixed CASE Header', expected: 'mixed-case-header' },
+        { input: 'HTML & CSS Basics', expected: 'html-css-basics' },
+        { input: 'API/REST Endpoints', expected: 'apirest-endpoints' }
+      ];
+
+      testCases.forEach(({ input, expected }) => {
+        const result = tocGenerator.createAnchorLink(input);
+        expect(result).toBe(expected);
+      });
+    });
+
+    it('should handle special characters and punctuation', () => {
+      const testCases = [
+        { input: 'What\'s New?', expected: 'whats-new' },
+        { input: 'Step 1: Setup', expected: 'step-1-setup' },
+        { input: 'Q&A Section', expected: 'qa-section' },
+        { input: 'Before/After Comparison', expected: 'beforeafter-comparison' },
+        { input: 'File.txt Processing', expected: 'filetxt-processing' }
       ];
 
       testCases.forEach(({ input, expected }) => {

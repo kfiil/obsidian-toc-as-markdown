@@ -110,9 +110,9 @@ This is the introduction.
 
 
 ## Table of Contents
-- [Introduction](#introduction)
-  - [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
+- [[#Introduction]]
+  - [[#Getting Started]]
+    - [[#Prerequisites]]
 
 ## Getting Started
 Instructions for getting started.

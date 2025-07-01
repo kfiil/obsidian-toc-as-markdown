@@ -2,6 +2,7 @@ export type TocAsMarkdownSettings = {
   formatType: 'bullets' | 'numbers' | 'mixed';
   indentSize: number;
   includeLinks: boolean;
+  linkFormat: 'obsidian' | 'markdown';
   minHeaderLevel: number;
   maxHeaderLevel: number;
   insertionMethod: 'cursor' | 'beginning' | 'end';
@@ -23,6 +24,7 @@ export type FormatOptions = {
   formatType: TocAsMarkdownSettings['formatType'];
   indentSize: number;
   includeLinks: boolean;
+  linkFormat: TocAsMarkdownSettings['linkFormat'];
   levelRange: {
     min: number;
     max: number;

@@ -79,9 +79,17 @@ export class TocGenerator {
     for (const header of headers) {
       const relativeLevel = header.level - minLevel;
       const indent = ' '.repeat(relativeLevel * formatOptions.indentSize);
-      const linkText = formatOptions.includeLinks 
-        ? `[${header.text}](#${header.anchor})`
-        : header.text;
+      
+      let linkText: string;
+      if (formatOptions.includeLinks) {
+        if (formatOptions.linkFormat === 'obsidian') {
+          linkText = `[[#${header.text}]]`;
+        } else {
+          linkText = `[${header.text}](#${header.anchor})`;
+        }
+      } else {
+        linkText = header.text;
+      }
 
       if (formatOptions.formatType === 'bullets') {
         lines.push(`${indent}- ${linkText}`);

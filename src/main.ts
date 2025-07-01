@@ -6,6 +6,7 @@ const DEFAULT_SETTINGS: TocAsMarkdownSettings = {
   formatType: 'bullets',
   indentSize: 2,
   includeLinks: true,
+  linkFormat: 'obsidian',
   minHeaderLevel: 1,
   maxHeaderLevel: 6,
   insertionMethod: 'beginning'
@@ -112,6 +113,7 @@ export class TocAsMarkdownPlugin extends Plugin {
         formatType: this.settings.formatType,
         indentSize: this.settings.indentSize,
         includeLinks: this.settings.includeLinks,
+        linkFormat: this.settings.linkFormat,
         levelRange: {
           min: this.settings.minHeaderLevel,
           max: this.settings.maxHeaderLevel
