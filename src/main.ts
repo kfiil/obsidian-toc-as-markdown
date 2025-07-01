@@ -162,28 +162,39 @@ export class TocAsMarkdownPlugin extends Plugin {
 
   private insertTocIntoContent(content: string, tocMarkdown: string): string {
     const lines = content.split('\n');
-    const tocSection = `## Table of Contents\n${tocMarkdown}\n`;
+    const tocSection = `## Table of Contents\n${tocMarkdown}`;
 
     if (this.settings.insertionMethod === 'beginning') {
-      // Find the first non-title header (assuming first line might be title)
       let insertIndex = 0;
-      
-      // Skip the title if it exists
-      if (lines[0]?.trim().startsWith('#')) {
+
+      // Handle frontmatter - skip it completely
+      if (lines[0]?.trim() === '---') {
         insertIndex = 1;
-        // Skip any content immediately after title until we find an empty line or another header
-        while (insertIndex < lines.length && 
-               lines[insertIndex]?.trim() !== '' && 
-               !lines[insertIndex]?.trim().startsWith('#')) {
+        // Find the end of frontmatter
+        while (insertIndex < lines.length && lines[insertIndex]?.trim() !== '---') {
           insertIndex++;
         }
-        // Insert after empty line if we found one
+        if (insertIndex < lines.length && lines[insertIndex]?.trim() === '---') {
+          insertIndex++; // Move past the closing ---
+        }
+      }
+
+      // Skip any empty lines after frontmatter
+      while (insertIndex < lines.length && lines[insertIndex]?.trim() === '') {
+        insertIndex++;
+      }
+
+      // If there's a title (H1), place TOC after title
+      if (insertIndex < lines.length && lines[insertIndex]?.trim().startsWith('# ')) {
+        insertIndex++; // Move past the title
+        // Skip empty line after title if it exists
         if (insertIndex < lines.length && lines[insertIndex]?.trim() === '') {
           insertIndex++;
         }
       }
 
-      lines.splice(insertIndex, 0, '', tocSection);
+      // Insert TOC with proper spacing
+      lines.splice(insertIndex, 0, tocSection, '');
     } else if (this.settings.insertionMethod === 'end') {
       lines.push('', tocSection);
     }

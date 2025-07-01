@@ -106,13 +106,12 @@ Instructions for getting started.
 What you need to know.`;
 
       const expectedTocContent = `# Introduction
-This is the introduction.
-
-
 ## Table of Contents
 - [[#Introduction]]
   - [[#Getting Started]]
     - [[#Prerequisites]]
+
+This is the introduction.
 
 ## Getting Started
 Instructions for getting started.
